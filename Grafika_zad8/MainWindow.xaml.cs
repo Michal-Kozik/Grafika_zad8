@@ -86,6 +86,7 @@ namespace Grafika_zad8
                         sum += (pixelBuffer[i - sourceBitmapData.Stride] < 127) ? 1 : 0;
                         sum += (pixelBuffer[i - sourceBitmapData.Stride + 4] < 127) ? 1 : 0;
                         sum += (pixelBuffer[i - 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i] < 127) ? 1 : 0;
                         sum += (pixelBuffer[i + 4] < 127) ? 1 : 0;
                         sum += (pixelBuffer[i + sourceBitmapData.Stride - 4] < 127) ? 1 : 0;
                         sum += (pixelBuffer[i + sourceBitmapData.Stride] < 127) ? 1 : 0;
@@ -167,6 +168,7 @@ namespace Grafika_zad8
                         sum += (pixelBuffer[i - sourceBitmapData.Stride] > 127) ? 1 : 0;
                         sum += (pixelBuffer[i - sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
                         sum += (pixelBuffer[i - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i] > 127) ? 1 : 0;
                         sum += (pixelBuffer[i + 4] > 127) ? 1 : 0;
                         sum += (pixelBuffer[i + sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
                         sum += (pixelBuffer[i + sourceBitmapData.Stride] > 127) ? 1 : 0;
