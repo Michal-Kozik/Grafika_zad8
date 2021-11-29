@@ -30,6 +30,14 @@ namespace Grafika_zad8
             InitializeComponent();
         }
 
+        private bool IsPictureLoaded()
+        {
+            if (imgSource.Source == null)
+                return false;
+            else
+                return true;
+        }
+
         private void OpenFileDialog(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -41,7 +49,11 @@ namespace Grafika_zad8
 
         private void Dilatation(object sender, RoutedEventArgs e)
         {
-            // TODO: Walidacja, czy istnieje obraz
+            if (!IsPictureLoaded())
+            {
+                MessageBox.Show("Nie załadowano obrazka.", "Brak obrazka", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
             BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
                                                             ImageLockMode.ReadOnly,
@@ -123,7 +135,11 @@ namespace Grafika_zad8
 
         private void Erosion(object sender, RoutedEventArgs e)
         {
-            // TODO: Walidacja, czy istnieje obraz
+            if (!IsPictureLoaded())
+            {
+                MessageBox.Show("Nie załadowano obrazka.", "Brak obrazka", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
             BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
                                                             ImageLockMode.ReadOnly,
@@ -205,7 +221,11 @@ namespace Grafika_zad8
 
         private void Opening(object sender, RoutedEventArgs e)
         {
-            // TODO: Walidacja, czy istnieje obraz
+            if (!IsPictureLoaded())
+            {
+                MessageBox.Show("Nie załadowano obrazka.", "Brak obrazka", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
             BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
                                                             ImageLockMode.ReadOnly,
@@ -342,7 +362,11 @@ namespace Grafika_zad8
 
         private void ClosingOperation(object sender, RoutedEventArgs e)
         {
-            // TODO: Walidacja, czy istnieje obraz
+            if (!IsPictureLoaded())
+            {
+                MessageBox.Show("Nie załadowano obrazka.", "Brak obrazka", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
             BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
                                                             ImageLockMode.ReadOnly,
@@ -479,7 +503,11 @@ namespace Grafika_zad8
 
         private void HitOrMiss(object sender, RoutedEventArgs e)
         {
-            // TODO: Walidacja, czy istnieje obraz
+            if (!IsPictureLoaded())
+            {
+                MessageBox.Show("Nie załadowano obrazka.", "Brak obrazka", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
             BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
                                                             ImageLockMode.ReadOnly,
