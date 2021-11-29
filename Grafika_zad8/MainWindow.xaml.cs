@@ -203,6 +203,280 @@ namespace Grafika_zad8
             imgResult.Source = ConvertBitmapToImageSource(imgResultBitmap);
         }
 
+        private void Opening(object sender, RoutedEventArgs e)
+        {
+            // TODO: Walidacja, czy istnieje obraz
+            Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
+            BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
+                                                            ImageLockMode.ReadOnly,
+                                                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            byte[] pixelBuffer = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            byte[] pixelBufferResult = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBufferResult, 0, pixelBufferResult.Length);
+            imgSourceBitmap.UnlockBits(sourceBitmapData);
+
+            // Erozja.
+            for (int i = 0; i + 4 < pixelBuffer.Length; i += 4)
+            {
+                // Pierwszy wiersz.
+                if (i <= sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Ostatni wiersz.
+                else if (i >= pixelBuffer.Length - sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Pierwsza kolumna.
+                else if (i % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                // Ostatnia kolumna.
+                else if ((i - 4) % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        int sum = 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        if (sum > 0)
+                        {
+                            // Tlo.
+                            pixelBufferResult[i] = 255;
+                            pixelBufferResult[i + 1] = 255;
+                            pixelBufferResult[i + 2] = 255;
+                        }
+                        else
+                        {
+                            // Obiekt.
+                            pixelBufferResult[i] = 0;
+                            pixelBufferResult[i + 1] = 0;
+                            pixelBufferResult[i + 2] = 0;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            // Dylatacja.
+            for (int i = 0; i + 4 < pixelBufferResult.Length; i += 4)
+            {
+                // Pierwszy wiersz.
+                if (i <= sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Ostatni wiersz.
+                else if (i >= pixelBufferResult.Length - sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Pierwsza kolumna.
+                else if (i % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                // Ostatnia kolumna.
+                else if ((i - 4) % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        int sum = 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride - 4] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride + 4] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - 4] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + 4] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride - 4] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride] < 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride + 4] < 127) ? 1 : 0;
+                        if (sum > 0)
+                        {
+                            // Obiekt.
+                            pixelBuffer[i] = 0;
+                            pixelBuffer[i + 1] = 0;
+                            pixelBuffer[i + 2] = 0;
+                        }
+                        else
+                        {
+                            // Tlo.
+                            pixelBuffer[i] = 255;
+                            pixelBuffer[i + 1] = 255;
+                            pixelBuffer[i + 2] = 255;
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            // Rezultat.
+            Bitmap imgResultBitmap = new Bitmap(imgSourceBitmap.Width, imgSourceBitmap.Height);
+            BitmapData resultBitmapData = imgResultBitmap.LockBits(new Rectangle(0, 0, imgResultBitmap.Width, imgResultBitmap.Height),
+                                                            ImageLockMode.WriteOnly,
+                                                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            Marshal.Copy(pixelBuffer, 0, resultBitmapData.Scan0, pixelBuffer.Length);
+            imgResultBitmap.UnlockBits(resultBitmapData);
+            imgResult.Source = ConvertBitmapToImageSource(imgResultBitmap);
+        }
+
+        private void ClosingOperation(object sender, RoutedEventArgs e)
+        {
+            // TODO: Walidacja, czy istnieje obraz
+            Bitmap imgSourceBitmap = ConvertImgToBitmap(imgSource);
+            BitmapData sourceBitmapData = imgSourceBitmap.LockBits(new Rectangle(0, 0, imgSourceBitmap.Width, imgSourceBitmap.Height),
+                                                            ImageLockMode.ReadOnly,
+                                                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            byte[] pixelBuffer = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
+
+            byte[] pixelBufferResult = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBufferResult, 0, pixelBufferResult.Length);
+            imgSourceBitmap.UnlockBits(sourceBitmapData);
+
+            // Dylatacja.
+            for (int i = 0; i + 4 < pixelBuffer.Length; i += 4)
+            {
+                // Pierwszy wiersz.
+                if (i <= sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Ostatni wiersz.
+                else if (i >= pixelBuffer.Length - sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Pierwsza kolumna.
+                else if (i % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                // Ostatnia kolumna.
+                else if ((i - 4) % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        int sum = 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride - 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride + 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride - 4] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride] < 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride + 4] < 127) ? 1 : 0;
+                        if (sum > 0)
+                        {
+                            // Obiekt.
+                            pixelBufferResult[i] = 0;
+                            pixelBufferResult[i + 1] = 0;
+                            pixelBufferResult[i + 2] = 0;
+                        }
+                        else
+                        {
+                            // Tlo.
+                            pixelBufferResult[i] = 255;
+                            pixelBufferResult[i + 1] = 255;
+                            pixelBufferResult[i + 2] = 255;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            // Erozja.
+            for (int i = 0; i + 4 < pixelBufferResult.Length; i += 4)
+            {
+                // Pierwszy wiersz.
+                if (i <= sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Ostatni wiersz.
+                else if (i >= pixelBufferResult.Length - sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Pierwsza kolumna.
+                else if (i % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                // Ostatnia kolumna.
+                else if ((i - 4) % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        int sum = 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i - 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBufferResult[i + sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        if (sum > 0)
+                        {
+                            // Tlo.
+                            pixelBuffer[i] = 255;
+                            pixelBuffer[i + 1] = 255;
+                            pixelBuffer[i + 2] = 255;
+                        }
+                        else
+                        {
+                            // Obiekt.
+                            pixelBuffer[i] = 0;
+                            pixelBuffer[i + 1] = 0;
+                            pixelBuffer[i + 2] = 0;
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            // Rezultat.
+            Bitmap imgResultBitmap = new Bitmap(imgSourceBitmap.Width, imgSourceBitmap.Height);
+            BitmapData resultBitmapData = imgResultBitmap.LockBits(new Rectangle(0, 0, imgResultBitmap.Width, imgResultBitmap.Height),
+                                                            ImageLockMode.WriteOnly,
+                                                            System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            Marshal.Copy(pixelBuffer, 0, resultBitmapData.Scan0, pixelBuffer.Length);
+            imgResultBitmap.UnlockBits(resultBitmapData);
+            imgResult.Source = ConvertBitmapToImageSource(imgResultBitmap);
+        }
+
         private Bitmap ConvertImgToBitmap(System.Windows.Controls.Image source)
         {
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)source.ActualWidth, (int)source.ActualHeight, 96.0, 96.0, PixelFormats.Pbgra32);

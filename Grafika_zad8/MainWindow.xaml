@@ -27,8 +27,8 @@
             <Label FontWeight="Bold" HorizontalAlignment="Center">Operacje morfologiczne:</Label>
             <Button Margin="0, 1" Width="150" Click="Dilatation">Dylatacja</Button>
             <Button Margin="0, 1" Width="150" Click="Erosion">Erozja</Button>
-            <Button Margin="0, 1" Width="150" >x</Button>
-            <Button Margin="0, 1" Width="150" >x</Button>
+            <Button Margin="0, 1" Width="150" Click="Opening">Otwarcie</Button>
+            <Button Margin="0, 1" Width="150" Click="ClosingOperation">Domknięcie</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <StackPanel VerticalAlignment="Center">
