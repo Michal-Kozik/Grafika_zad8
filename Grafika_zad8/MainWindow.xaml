@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Grafika_zad8"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Grafika zadanie nr 8" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -29,6 +29,7 @@
             <Button Margin="0, 1" Width="150" Click="Erosion">Erozja</Button>
             <Button Margin="0, 1" Width="150" Click="Opening">Otwarcie</Button>
             <Button Margin="0, 1" Width="150" Click="ClosingOperation">Domknięcie</Button>
+            <Button Margin="0, 1" Width="150" Click="HitOrMiss">Hit or Miss</Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
             <StackPanel VerticalAlignment="Center">
