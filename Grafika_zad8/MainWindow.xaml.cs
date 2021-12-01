@@ -516,12 +516,21 @@ namespace Grafika_zad8
             byte[] pixelBuffer = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
             Marshal.Copy(sourceBitmapData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
 
+            byte[] pixelBufferInvert = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBufferInvert, 0, pixelBufferInvert.Length);
+
+            byte[] pixelBufferHitOrMiss1 = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBufferHitOrMiss1, 0, pixelBufferHitOrMiss1.Length);
+
+            byte[] pixelBufferHitOrMiss2 = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
+            Marshal.Copy(sourceBitmapData.Scan0, pixelBufferHitOrMiss2, 0, pixelBufferHitOrMiss2.Length);
+
             byte[] pixelBufferHitOrMiss = new byte[sourceBitmapData.Stride * sourceBitmapData.Height];
             Marshal.Copy(sourceBitmapData.Scan0, pixelBufferHitOrMiss, 0, pixelBufferHitOrMiss.Length);
 
             imgSourceBitmap.UnlockBits(sourceBitmapData);
 
-            // HitOrMiss.
+            // Erozja nr 1.
             for (int i = 0; i + 4 < pixelBuffer.Length; i += 4)
             {
                 // Pierwszy wiersz.
@@ -548,48 +557,127 @@ namespace Grafika_zad8
                 {
                     try
                     {
-                        // 1 0 0
-                        // 1 0 0
-                        // 1 0 0
-                        int sumA = 0;
-                        sumA += (pixelBuffer[i - sourceBitmapData.Stride - 4] < 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i - sourceBitmapData.Stride] > 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i - sourceBitmapData.Stride + 4] > 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i - 4] < 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i] > 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i + 4] > 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i + sourceBitmapData.Stride - 4] < 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i + sourceBitmapData.Stride] > 127) ? 0 : 1;
-                        sumA += (pixelBuffer[i + sourceBitmapData.Stride + 4] > 127) ? 0 : 1;
-                        // 0 1 1
-                        // 0 1 1
-                        // 0 1 1
-                        int sumB = 0;
-                        sumB += (pixelBuffer[i - sourceBitmapData.Stride - 4] > 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i - sourceBitmapData.Stride] < 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i - sourceBitmapData.Stride + 4] < 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i - 4] > 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i] < 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i + 4] < 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i + sourceBitmapData.Stride - 4] > 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i + sourceBitmapData.Stride] < 127) ? 0 : 1;
-                        sumB += (pixelBuffer[i + sourceBitmapData.Stride + 4] < 127) ? 0 : 1;
-                        if (sumA == 0 && sumB == 9)
+                        // 0 1 0
+                        // 1 1 1
+                        // 0 1 0
+                        int sum = 0;
+                        //sum += (pixelBuffer[i - sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        //sum += (pixelBuffer[i - sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + 4] > 127) ? 1 : 0;
+                        //sum += (pixelBuffer[i + sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        sum += (pixelBuffer[i + sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        //sum += (pixelBuffer[i + sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        if (sum > 0)
                         {
-                            // Ustawienie na obiekt.
-                            pixelBufferHitOrMiss[i] = 255;
-                            pixelBufferHitOrMiss[i + 1] = 255;
-                            pixelBufferHitOrMiss[i + 2] = 255;
+                            // Tlo.
+                            pixelBufferHitOrMiss1[i] = 255;
+                            pixelBufferHitOrMiss1[i + 1] = 255;
+                            pixelBufferHitOrMiss1[i + 2] = 255;
                         }
                         else
                         {
-                            // Ustawienie na tlo.
-                            pixelBufferHitOrMiss[i] = 0;
-                            pixelBufferHitOrMiss[i + 1] = 0;
-                            pixelBufferHitOrMiss[i + 2] = 0;
+                            // Obiekt.
+                            pixelBufferHitOrMiss1[i] = 0;
+                            pixelBufferHitOrMiss1[i + 1] = 0;
+                            pixelBufferHitOrMiss1[i + 2] = 0;
                         }
                     }
                     catch { }
+                }
+            }
+            // Odwrocenie obrazu.
+            for (int i = 0; i + 4 < pixelBuffer.Length; i += 4)
+            {
+                if (pixelBuffer[i] < 127)
+                {
+                    pixelBufferInvert[i] = 255;
+                    pixelBufferInvert[i + 1] = 255;
+                    pixelBufferInvert[i + 2] = 255;
+                }
+                else
+                {
+                    pixelBufferInvert[i] = 0;
+                    pixelBufferInvert[i + 1] = 0;
+                    pixelBufferInvert[i + 2] = 0;
+                }
+            }
+            // Erozja nr 2.
+            for (int i = 0; i + 4 < pixelBuffer.Length; i += 4)
+            {
+                // Pierwszy wiersz.
+                if (i <= sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Ostatni wiersz.
+                else if (i >= pixelBuffer.Length - sourceBitmapData.Stride)
+                {
+                    continue;
+                }
+                // Pierwsza kolumna.
+                else if (i % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                // Ostatnia kolumna.
+                else if ((i - 4) % sourceBitmapData.Stride == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    try
+                    {
+                        // 1 0 1
+                        // 0 0 0
+                        // 1 0 1
+                        int sum = 0;
+                        sum += (pixelBufferInvert[i - sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        //sum += (pixelBufferInvert[i - sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBufferInvert[i - sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        //sum += (pixelBufferInvert[i - 4] > 127) ? 1 : 0;
+                        //sum += (pixelBufferInvert[i] > 127) ? 1 : 0;
+                        //sum += (pixelBufferInvert[i + 4] > 127) ? 1 : 0;
+                        sum += (pixelBufferInvert[i + sourceBitmapData.Stride - 4] > 127) ? 1 : 0;
+                        //sum += (pixelBufferInvert[i + sourceBitmapData.Stride] > 127) ? 1 : 0;
+                        sum += (pixelBufferInvert[i + sourceBitmapData.Stride + 4] > 127) ? 1 : 0;
+                        if (sum > 0)
+                        {
+                            // Tlo.
+                            pixelBufferHitOrMiss2[i] = 255;
+                            pixelBufferHitOrMiss2[i + 1] = 255;
+                            pixelBufferHitOrMiss2[i + 2] = 255;
+                        }
+                        else
+                        {
+                            // Obiekt.
+                            pixelBufferHitOrMiss2[i] = 0;
+                            pixelBufferHitOrMiss2[i + 1] = 0;
+                            pixelBufferHitOrMiss2[i + 2] = 0;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            // Czesc wspolna.
+            for (int i = 0; i + 4 < pixelBufferHitOrMiss1.Length; i += 4)
+            {
+                if (pixelBufferHitOrMiss1[i] == pixelBuffer[i] && pixelBufferHitOrMiss2[i] != pixelBuffer[i])
+                {
+                    // Obiekt.
+                    pixelBufferHitOrMiss[i] = 0;
+                    pixelBufferHitOrMiss[i + 1] = 0;
+                    pixelBufferHitOrMiss[i + 2] = 0;
+                }
+                else
+                {
+                    // Tlo.
+                    pixelBufferHitOrMiss[i] = 255;
+                    pixelBufferHitOrMiss[i + 1] = 255;
+                    pixelBufferHitOrMiss[i + 2] = 255;
                 }
             }
 
